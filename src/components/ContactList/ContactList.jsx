@@ -1,15 +1,21 @@
+import Stat from '../Stat';
 import styles from './ContactList.module.scss';
+
 import { connect } from 'react-redux';
+import contactsActions from '../../redux/phonebook/contacts-actions';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import contactsActions from '../../redux/phonebook/contacts-actions';
 
 const useStyles = makeStyles(theme => ({
   root: {
     '& > *': {
       margin: theme.spacing(1),
     },
+  },
+  TitleContainer: {
+    display: 'flex',
+    alignItems: 'baseline',
   },
   container: {
     width: '350px',
@@ -32,7 +38,10 @@ const ContactList = ({ items, onDeleteContact, children }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <h3 className="title">Contacts</h3>
+      <div className={classes.TitleContainer}>
+        <h3 className="title">Contacts</h3>
+        <Stat />
+      </div>
       {children}
       {items.map(contact => (
         <li key={contact.id} className={styles.ContactList__item}>
@@ -59,21 +68,9 @@ const getVisibleContacts = (allContacts, filter) => {
   );
 };
 
-const mapStateToProps = ({ contacts: { items, filter } }) => {
-  // const { filter, items } = state.contacts;
-  // const normalizedFilter = filter.toLowerCase();
-
-  // const visibleContacts = items.filter(({ name }) =>
-  //   name.toLowerCase().includes(normalizedFilter),
-  // );
-
-  return {
-    items: getVisibleContacts(items, filter),
-    // items: getVisibleContacts(state.contacts.items, state.contacts.filter), --- with external helper fn
-    // items: visibleContacts, --- with inside logic,
-    // items: state.contacts.items, --- without filter
-  };
-};
+const mapStateToProps = ({ contacts: { items, filter } }) => ({
+  items: getVisibleContacts(items, filter),
+});
 
 const mapDispatchToProps = dispatch => ({
   onDeleteContact: id => dispatch(contactsActions.deleteContact(id)),

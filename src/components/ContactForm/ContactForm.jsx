@@ -4,6 +4,8 @@ import './ContactForm.module.scss';
 import Button from '@material-ui/core/Button';
 import { connect } from 'react-redux';
 import contactsActions from '../../redux/phonebook/contacts-actions';
+import store from '../../redux/store';
+import styles from './ContactForm.module.scss';
 
 class ContactForm extends Component {
   state = {
@@ -20,7 +22,16 @@ class ContactForm extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
+
+    const { name } = this.state;
+    const contacts = store.store.getState().contacts.items;
+    if (contacts.some(contact => contact.name === name)) {
+      alert(`${name} is already in contacts.`);
+      return;
+    }
+
     this.props.getData(this.state);
+    this.props.onCloseModal();
     this.reset();
   };
 
@@ -31,9 +42,10 @@ class ContactForm extends Component {
   render() {
     return (
       <form className="form" onSubmit={this.handleSubmit}>
-        <label htmlFor={this.nameInputId} className="form__input">
+        <label htmlFor={this.nameInputId} className="form__label">
           Name:
           <input
+            className="Form_input"
             id={this.nameInputId}
             type="text"
             name="name"
@@ -41,9 +53,11 @@ class ContactForm extends Component {
             onChange={this.handleChange}
           />
         </label>
+
         <label htmlFor={this.numberInputId}>
           Number:
           <input
+            className="Form_input"
             id={this.numberInputId}
             type="tel"
             name="number"
@@ -52,7 +66,8 @@ class ContactForm extends Component {
             onChange={this.handleChange}
           />
         </label>
-        <div className="btnAdd">
+
+        <div className={styles.btnAdd}>
           <Button variant="contained" className="btn" type="submit">
             Add
           </Button>
